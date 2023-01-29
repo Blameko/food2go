@@ -1,12 +1,12 @@
 <template>
   <v-list class="list-container">
-    <v-subheader class="list-title">{{ title }}</v-subheader>
+    <v-subheader class="list-title text-center">{{ title }}</v-subheader>
     <v-list-item-group>
       <v-list-item
         v-for="item in items"
         :key="item.title"
         class="card"
-        @click="$emit('changeRoute', item.routeName)"
+        @click="$emit('changeRoute', item), $emit('handleOrder', item)"
         link
       >
         <div class="card__content">
@@ -14,12 +14,17 @@
             <img :src="item.img" :alt="item.title" />
           </div>
           <v-icon class="ml-5" v-else>{{ item.icon }}</v-icon>
-
           <v-list-item-content class="card__desc">
             <v-list-item-title class="card__title">{{
               item.title
             }}</v-list-item-title>
-            <span class="card__details">{{ item.details }}</span>
+            <span v-if="!item.ordersNumber" class="card__details">{{
+              item.details
+            }}</span>
+            <div class="card__order" v-else>
+              <span class="card__price">{{ format(item.price) }}</span>
+              <span class="card__order-number">{{ item.ordersNumber }}x</span>
+            </div>
           </v-list-item-content>
         </div>
       </v-list-item>
@@ -28,6 +33,7 @@
 </template>
 
 <script>
+import { format } from "@/utils/currencyService";
 export default {
   name: "List",
   props: {
@@ -42,12 +48,20 @@ export default {
       type: String,
     },
   },
+  setup() {
+    return {
+      format,
+    };
+  },
 };
 </script>
 
 <style lang="scss">
 .list-title {
   font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card {
@@ -55,6 +69,7 @@ export default {
   display: flex;
   justify-content: space-between;
   height: 7rem;
+  position: relative;
 
   &__image {
     width: 10rem;
@@ -70,16 +85,41 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+  }
 
-    span {
-      font-size: clamp(0.75rem, 3vw, 1rem);
-      text-align: start;
-    }
+  &__details {
+    font-size: clamp(0.75rem, 3vw, 1rem);
+    text-align: start;
   }
 
   &__title {
     font-size: clamp(0.95rem, 3vw, 1.5rem);
     font-weight: 900;
+  }
+
+  &__order {
+    min-width: 10rem;
+    // width: clamp(10rem, 80vw, 5rem);
+  }
+
+  &__price {
+    font-size: 1.25rem;
+  }
+
+  &__order-number {
+    position: absolute;
+    opacity: 0.75;
+    right: clamp(1rem, 15vw, 10rem);
+    bottom: 2rem;
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 40rem) {
+  .card {
+    &__content {
+      gap: 4rem;
+    }
   }
 }
 </style>

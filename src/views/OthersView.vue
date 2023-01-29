@@ -23,7 +23,7 @@ export default {
 
     function changeRoute(value) {
       if (value == "logout") return console.log("here must logout");
-      router.push({ name: value });
+      router.push({ name: value.routeName });
     }
     return {
       items,
